@@ -7,24 +7,34 @@
     <title>Game Bầu Cua Tôm Cá - NT Huy Pro</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #c0392b;
-            --success-color: #27ae60;
-            --bg-color: #f0f2f5;
+            /* Bảng màu Tết: Đỏ & Vàng */
+            --primary-color: #D32F2F;
+            /* Đỏ đậm */
+            --accent-color: #FFC107;
+            /* Vàng kim */
+            --secondary-color: #FFF9C4;
+            /* Kem sáng */
+            --success-color: #388E3C;
+            /* Xanh lá */
+            --text-color: #333;
+            --bg-gradient-1: #FF5252;
+            --bg-gradient-2: #D32F2F;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
             user-select: none;
         }
 
-        /* --- Header & Toggles --- */
+        /* --- Header --- */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -32,6 +42,18 @@
             width: 100%;
             max-width: 1200px;
             margin-bottom: 20px;
+            padding: 15px 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--accent-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+            font-size: 1.8em;
         }
 
         .header-right {
@@ -39,32 +61,44 @@
             gap: 10px;
         }
 
-        .btn-icon {
-            background-color: white;
-            color: var(--primary-color);
-            border: 1px solid #ccc;
-            padding: 8px 12px;
-            border-radius: 5px;
+        /* --- Buttons --- */
+        .btn-icon,
+        button {
+            background-color: var(--primary-color);
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            padding: 10px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #9e1c1c;
+            /* Tạo hiệu ứng nút nổi 3D */
+            transition: all 0.1s ease;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
         }
 
-        .btn-icon:hover {
-            background-color: #f9f9f9;
+        .btn-icon:hover,
+        button:hover {
+            background-color: #b71c1c;
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #9e1c1c;
         }
 
-        .btn-icon.active {
-            background-color: #ddd;
+        .btn-icon:active,
+        button:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
-        /* --- Layout --- */
+        /* --- Layout Chính (QUAN TRỌNG) --- */
         .container {
             display: grid;
             grid-template-columns: 3fr 1fr;
+            /* Chia cột 3 phần game - 1 phần lịch sử */
             gap: 20px;
             max-width: 1200px;
             width: 100%;
@@ -79,45 +113,60 @@
             display: none;
         }
 
-        .game-board {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* --- Khung Game & Sidebar --- */
+        .game-board,
+        .sidebar {
+            background: var(--secondary-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 4px solid var(--accent-color);
+            /* Viền vàng đậm */
         }
 
         .sidebar {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-height: 800px;
             overflow-y: auto;
         }
 
-        /* --- Dealer, Bowl & Dice Area --- */
+        /* --- Khu vực Nhà Cái & Xúc Xắc (QUAN TRỌNG) --- */
         .dealer-section {
             text-align: center;
-            border-bottom: 2px dashed #ddd;
+            border-bottom: 2px dashed var(--primary-color);
             padding-bottom: 20px;
             margin-bottom: 20px;
             position: relative;
             min-height: 250px;
-            /* Tăng chiều cao để bát không bị cắt */
+            /* Đảm bảo đủ cao cho bát */
         }
 
+        #dealer-name-display {
+            color: var(--primary-color);
+            font-size: 1.5em;
+            margin: 0;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #dealer-balance {
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 1.2em;
+        }
+
+        /* --- Layout Xúc Xắc --- */
         .dice-area {
             position: relative;
             width: 300px;
             height: 150px;
-            margin: 0 auto;
+            margin: 40px auto 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-top: 50px;
         }
 
+        /* --- Viên Xúc Xắc --- */
         .dice {
             width: 80px;
             height: 80px;
@@ -128,7 +177,7 @@
             align-items: center;
             justify-content: center;
             font-size: 50px;
-            box-shadow: 0 4px 0 #bdc3c7;
+            box-shadow: 0 6px 0 #bdc3c7;
             z-index: 1;
         }
 
@@ -158,26 +207,22 @@
             animation: spinDice 0.5s infinite linear;
         }
 
-        /* --- CẬP NHẬT: CÁI BÁT (IMAGE) --- */
+        /* --- Cái Bát (Ảnh) --- */
         #the-bowl {
             width: 400px;
             height: 400px;
-
             background-image: url('cai-bat.png');
-            background-size: contain;
-            background-repeat: no-repeat;
+            /* Đảm bảo tên file ảnh đúng */
+            background-size: cover;
             background-position: center;
-
             border-radius: 50%;
-
             position: absolute;
-            top: -120px;
+            top: -85px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 20;
-
+            z-index: 10;
             cursor: grab;
-            transition: top 0.5s ease-out, transform 0.1s;
+            transition: top 0.5s ease-out, opacity 0.3s;
         }
 
         #the-bowl:active {
@@ -190,7 +235,7 @@
             pointer-events: none;
         }
 
-        /* --- Betting Board --- */
+        /* --- Bàn Cược --- */
         .betting-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -199,23 +244,26 @@
         }
 
         .bet-option {
-            border: 2px solid #ddd;
-            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            background-color: white;
             position: relative;
         }
 
         .bet-option:hover {
-            border-color: var(--primary-color);
-            background: #f9f9f9;
+            border-color: var(--accent-color);
+            background: #fffce0;
+            transform: scale(1.05);
         }
 
         .bet-option.selected {
-            border-color: var(--accent-color);
-            background: #fff5f5;
+            border-color: var(--primary-color);
+            background: #ffebee;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.3);
         }
 
         .symbol-icon {
@@ -229,76 +277,81 @@
         }
 
         .current-bet-display {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: var(--success-color);
-            margin-top: 5px;
+            font-weight: bold;
             min-height: 1.2em;
+            margin-top: 5px;
         }
 
-        /* --- Controls --- */
+        /* --- Controls Area --- */
         .controls {
-            background: #eee;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
         }
 
         .control-row {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             align-items: center;
         }
 
+        .control-row label {
+            font-weight: bold;
+            color: #555;
+            min-width: 90px;
+        }
+
         select,
-        input,
-        button {
+        input {
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
             font-size: 16px;
+            outline: none;
         }
 
-        button {
-            cursor: pointer;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            font-weight: bold;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
+        select:focus,
+        input:focus {
+            border-color: var(--primary-color);
         }
 
         #btn-action {
             width: 100%;
-            background: var(--accent-color);
-            font-size: 18px;
+            font-size: 20px;
             padding: 15px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         #btn-action.btn-open {
-            background: var(--success-color);
+            background-color: var(--success-color);
+            border-color: #2e7d32;
+            box-shadow: 0 4px 0 #1b5e20;
         }
 
-        /* --- Player Info & Settings --- */
+        #btn-action.btn-open:hover {
+            background-color: #2e7d32;
+        }
+
+        /* --- Player Info & Modal --- */
         .player-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+            margin-bottom: 5px;
+            border-radius: 5px;
         }
 
-        .player-avatar {
-            font-size: 20px;
-            margin-right: 8px;
+        .player-card.dealer {
+            background: #ffebee;
+            font-weight: bold;
         }
 
         .money-hidden .money-value {
@@ -309,7 +362,6 @@
             content: "*****";
         }
 
-        /* --- MODAL --- */
         .modal {
             display: none;
             position: fixed;
@@ -321,24 +373,32 @@
             background-color: rgba(0, 0, 0, 0.6);
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(2px);
         }
 
         .modal-content {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             width: 550px;
             max-width: 95%;
             max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary-color);
         }
 
         .form-group {
@@ -346,13 +406,7 @@
             grid-template-columns: 0.5fr 2fr 1.5fr 1fr;
             gap: 10px;
             align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 5px;
-            font-size: 12px;
+            margin-bottom: 15px;
         }
 
         .modal-footer {
@@ -360,6 +414,25 @@
             text-align: right;
             border-top: 1px solid #eee;
             padding-top: 15px;
+        }
+
+        /* Log entries */
+        .log-entry {
+            font-size: 13px;
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px dashed #ccc;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .win {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .lose {
+            color: var(--primary-color);
         }
     </style>
 </head>
