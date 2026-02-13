@@ -4,18 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Bầu Cua Tôm Cá - NT Huy Pro</title>
+    <title>Game Bầu Cua Ultimate - NT Huy Pro</title>
     <style>
         :root {
-            /* Bảng màu Tết: Đỏ & Vàng */
             --primary-color: #D32F2F;
-            /* Đỏ đậm */
             --accent-color: #FFC107;
-            /* Vàng kim */
             --secondary-color: #FFF9C4;
-            /* Kem sáng */
             --success-color: #388E3C;
-            /* Xanh lá */
             --text-color: #333;
             --bg-gradient-1: #FF5252;
             --bg-gradient-2: #D32F2F;
@@ -32,9 +27,111 @@
             align-items: center;
             min-height: 100vh;
             user-select: none;
+            overflow-x: hidden;
         }
 
-        /* --- Header --- */
+        /* --- CANVAS PHÁO HOA --- */
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            /* Nằm trên game nhưng dưới modal */
+            pointer-events: none;
+            /* Click xuyên qua để chơi tiếp */
+        }
+
+        /* --- TUTORIAL OVERLAY --- */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .tutorial-box {
+            background: white;
+            width: 500px;
+            max-width: 90%;
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tutorial-step h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .tutorial-step p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .tutorial-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #9e1c1c;
+            transition: transform 0.1s;
+        }
+
+        .tutorial-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .step-dots {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #ddd;
+            border-radius: 50%;
+        }
+
+        .dot.active {
+            background: var(--primary-color);
+        }
+
+        /* --- Header & Layout --- */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -47,6 +144,8 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             border: 2px solid var(--accent-color);
+            z-index: 10;
+            position: relative;
         }
 
         h1 {
@@ -61,7 +160,6 @@
             gap: 10px;
         }
 
-        /* --- Buttons --- */
         .btn-icon,
         button {
             background-color: var(--primary-color);
@@ -72,7 +170,6 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 0 #9e1c1c;
-            /* Tạo hiệu ứng nút nổi 3D */
             transition: all 0.1s ease;
             display: flex;
             align-items: center;
@@ -94,15 +191,15 @@
             box-shadow: none;
         }
 
-        /* --- Layout Chính (QUAN TRỌNG) --- */
         .container {
             display: grid;
             grid-template-columns: 3fr 1fr;
-            /* Chia cột 3 phần game - 1 phần lịch sử */
             gap: 20px;
             max-width: 1200px;
             width: 100%;
             transition: all 0.3s;
+            z-index: 10;
+            position: relative;
         }
 
         .container.hide-sidebar {
@@ -113,7 +210,6 @@
             display: none;
         }
 
-        /* --- Khung Game & Sidebar --- */
         .game-board,
         .sidebar {
             background: var(--secondary-color);
@@ -121,7 +217,6 @@
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             border: 4px solid var(--accent-color);
-            /* Viền vàng đậm */
         }
 
         .sidebar {
@@ -129,7 +224,6 @@
             overflow-y: auto;
         }
 
-        /* --- Khu vực Nhà Cái & Xúc Xắc (QUAN TRỌNG) --- */
         .dealer-section {
             text-align: center;
             border-bottom: 2px dashed var(--primary-color);
@@ -137,7 +231,6 @@
             margin-bottom: 20px;
             position: relative;
             min-height: 250px;
-            /* Đảm bảo đủ cao cho bát */
         }
 
         #dealer-name-display {
@@ -154,7 +247,6 @@
             font-size: 1.2em;
         }
 
-        /* --- Layout Xúc Xắc --- */
         .dice-area {
             position: relative;
             width: 300px;
@@ -166,7 +258,6 @@
             gap: 15px;
         }
 
-        /* --- Viên Xúc Xắc --- */
         .dice {
             width: 80px;
             height: 80px;
@@ -207,12 +298,10 @@
             animation: spinDice 0.5s infinite linear;
         }
 
-        /* --- Cái Bát (Ảnh) --- */
         #the-bowl {
             width: 400px;
             height: 400px;
             background-image: url('cai-bat.png');
-            /* Đảm bảo tên file ảnh đúng */
             background-size: cover;
             background-position: center;
             border-radius: 50%;
@@ -220,7 +309,7 @@
             top: -85px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10;
+            z-index: 20;
             cursor: grab;
             transition: top 0.5s ease-out, opacity 0.3s;
         }
@@ -235,7 +324,6 @@
             pointer-events: none;
         }
 
-        /* --- Bàn Cược --- */
         .betting-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -284,7 +372,6 @@
             margin-top: 5px;
         }
 
-        /* --- Controls Area --- */
         .controls {
             background: rgba(255, 255, 255, 0.7);
             padding: 20px;
@@ -337,7 +424,6 @@
             background-color: #2e7d32;
         }
 
-        /* --- Player Info & Modal --- */
         .player-card {
             display: flex;
             justify-content: space-between;
@@ -354,12 +440,9 @@
             font-weight: bold;
         }
 
-        .money-hidden .money-value {
-            display: none;
-        }
-
-        .money-hidden .money-value::after {
-            content: "*****";
+        .money-value {
+            font-family: monospace;
+            font-size: 1.1em;
         }
 
         .modal {
@@ -411,12 +494,16 @@
 
         .modal-footer {
             margin-top: 20px;
-            text-align: right;
             border-top: 1px solid #eee;
             padding-top: 15px;
+
+            display: flex;
+            justify-content: center;
+            /* đẩy nút về bên phải */
+            gap: 10px;
+            /* khoảng cách giữa 2 nút */
         }
 
-        /* Log entries */
         .log-entry {
             font-size: 13px;
             margin-bottom: 5px;
@@ -434,36 +521,119 @@
         .lose {
             color: var(--primary-color);
         }
+
+        .falling-flower {
+            position: fixed;
+            top: -10%;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+            animation-name: fall-down;
+            animation-timing-function: linear;
+            font-size: 20px;
+        }
+
+        @keyframes fall-down {
+            0% {
+                top: -10%;
+                transform: translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                top: 110%;
+                transform: translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+        }
+
+        .music-icon {
+            font-size: 24px;
+        }
     </style>
 </head>
 
 <body>
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div id="tutorial-overlay" class="tutorial-overlay">
+        <div class="tutorial-box">
+            <div id="step-1" class="tutorial-step">
+                <h2>🎉 Chào Mừng Đến Với Bầu Cua Ultimate!</h2>
+                <p>Trước khi bắt đầu, hãy thiết lập trò chơi cho đúng ý bạn.</p>
+                <div style="background: #FFF9C4; padding: 10px; border-radius: 10px; margin: 15px 0;">
+                    <p>Nhấn vào nút <b>⚙️ Cài đặt</b> để đổi tên, Avatar & Tiền.</p>
+                </div>
+                <button class="tutorial-btn" onclick="showStep2()">Tiếp Theo ➡️</button>
+                <div class="step-dots"><span class="dot active"></span><span class="dot"></span></div>
+            </div>
+            <div id="step-2" class="tutorial-step" style="display: none;">
+                <h2>🎲 Hướng Dẫn Cách Chơi</h2>
+                <ul style="text-align: left; margin: 15px 0; font-size: 15px;">
+                    <li><b>Bước 1:</b> Chọn người và đặt tiền vào cửa cược.</li>
+                    <li><b>Bước 2:</b> Nhấn <b>XÓC</b> để lắc xúc xắc.</li>
+                    <li><b>Bước 3:</b> Nhấn nút Mở hoặc <b>kéo cái bát</b> để xem kết quả.</li>
+                    <li><b>✨ Mới:</b> Pháo hoa & Tiếng vỗ tay sẽ nổ khi mở bát!</li>
+                </ul>
+                <button class="tutorial-btn" onclick="finishTutorial()">Bắt Đầu Chơi 🎵</button>
+                <div class="step-dots"><span class="dot"></span><span class="dot active"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bg-audio" loop>
+        <source src="nhac-tet.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-clap">
+        <source src="vo-tay.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()" title="Bật/Tắt Nhạc">
+        <span class="music-icon" id="music-icon">🔇</span>
+        <span style="font-weight:bold; font-size:14px; color: var(--primary-color)">Nhạc Tết</span>
+    </div>
 
     <div class="header-container">
         <h1>🎲 Bầu Cua Ultimate - NT Huy Pro</h1>
         <div class="header-right">
-            <button class="btn-icon" onclick="toggleMoney()" title="Ẩn/Hiện Tiền">
-                💰 <span id="money-status">Hiện</span>
-            </button>
-            <button class="btn-icon" onclick="toggleSidebar()" title="Ẩn/Hiện Lịch Sử">
-                📜 <span id="history-status">Hiện</span>
-            </button>
+            <button class="btn-icon" onclick="toggleMoney()" title="Ẩn/Hiện Tiền">💰 <span
+                    id="money-status">Hiện</span></button>
+            <button class="btn-icon" onclick="toggleSidebar()" title="Ẩn/Hiện Lịch Sử">📜 <span
+                    id="history-status">Hiện</span></button>
             <button class="btn-icon" onclick="openSettings()">⚙️ Cài đặt</button>
         </div>
     </div>
 
     <div class="container" id="main-container">
         <div class="game-board">
-
             <div class="dealer-section">
                 <h3 id="dealer-name-display">Nhà Cái</h3>
                 <div id="dealer-balance" class="money-value">Tiền: 0 $</div>
-
                 <div class="dice-area">
                     <div class="dice" id="d1">?</div>
                     <div class="dice" id="d2">?</div>
                     <div class="dice" id="d3">?</div>
-
                     <div id="the-bowl" class="bowl-open" title="Kéo tôi để mở!"></div>
                 </div>
             </div>
@@ -475,7 +645,8 @@
                 <div class="control-row">
                     <label>Người chơi:</label>
                     <select id="player-select"></select>
-                    <span id="current-player-balance" style="font-weight: bold; color: var(--success-color)"></span>
+                    <span id="current-player-balance" class="money-value"
+                        style="font-weight: bold; color: var(--success-color)"></span>
                 </div>
                 <div class="control-row">
                     <label>Cửa cược:</label>
@@ -525,6 +696,126 @@
     </div>
 
     <script>
+        /** --- PHÁO HOA ENGINE (CANVAS) --- */
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let isFireworksActive = false;
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 6 + 2;
+                this.dx = Math.cos(angle) * velocity;
+                this.dy = Math.sin(angle) * velocity;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.015;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+                this.dy += 0.05; // Gravity
+                this.dx *= 0.98; // Friction
+                this.dy *= 0.98;
+                this.alpha -= this.decay;
+            }
+        }
+
+        function createFirework(x, y) {
+            const colors = ['#ff0043', '#14fc56', '#1e90ff', '#ffeb3b', '#ff00ff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function loopFireworks() {
+            if (!isFireworksActive && particles.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            requestAnimationFrame(loopFireworks);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Auto launch random fireworks if active
+            if (isFireworksActive && Math.random() < 0.05) {
+                createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+            }
+
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.alpha <= 0) particles.splice(index, 1);
+            });
+        }
+
+        function startFireworks() {
+            isFireworksActive = true;
+            loopFireworks();
+            // Bắn ngay vài quả lúc bắt đầu
+            for (let i = 0; i < 5; i++) createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+
+            // Tắt sau 5 giây
+            setTimeout(() => { isFireworksActive = false; }, 5000);
+        }
+
+        /** --- TUTORIAL & NHẠC --- */
+        function showStep2() {
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        }
+
+        function finishTutorial() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            const audio = document.getElementById('bg-audio');
+            const icon = document.getElementById('music-icon');
+            audio.play().then(() => {
+                isMusicPlaying = true;
+                icon.innerText = "🔊";
+            }).catch(e => { console.log("Lỗi nhạc nền"); });
+        }
+
+        let isMusicPlaying = false;
+        function toggleMusic() {
+            const audio = document.getElementById('bg-audio');
+            const icon = document.getElementById('music-icon');
+            if (isMusicPlaying) {
+                audio.pause(); icon.innerText = "🔇"; isMusicPlaying = false;
+            } else {
+                audio.play(); icon.innerText = "🔊"; isMusicPlaying = true;
+            }
+        }
+
+        function initFlowers() {
+            setInterval(() => {
+                const flower = document.createElement('div');
+                flower.classList.add('falling-flower');
+                const types = ['🌸', '🌼', '🧧'];
+                flower.innerText = types[Math.floor(Math.random() * types.length)];
+                flower.style.left = Math.random() * 100 + 'vw';
+                flower.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                flower.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                document.body.appendChild(flower);
+                setTimeout(() => { flower.remove(); }, 10000);
+            }, 500);
+        }
+
         /** --- CẤU HÌNH --- */
         const SYMBOLS = [
             { name: 'Bầu', icon: '🍐' }, { name: 'Cua', icon: '🦀' },
@@ -532,38 +823,26 @@
             { name: 'Nai', icon: '🦌' }, { name: 'Gà', icon: '🐓' }
         ];
         const AVATARS = { male: '👱‍♂️', female: '👩' };
-
-        // State
         let dealer = { name: "Nhà Cái", balance: 10000 };
         let players = [];
         let currentBets = [];
         let gameState = "IDLE";
         let diceResult = [0, 0, 0];
-
-        // UI Toggles
         let showMoney = true;
         let showSidebar = true;
-
-        // Drag Logic
-        let dragItem = null;
-        let active = false;
-        let currentX, currentY, initialX, initialY;
         let xOffset = 0, yOffset = 0;
+        let active = false, currentX, currentY, initialX, initialY;
 
-        /** --- KHỞI TẠO --- */
         function initGame() {
             for (let i = 1; i <= 6; i++) {
-                players.push({
-                    id: i, name: `Người chơi ${i}`, balance: 1000, gender: 'male'
-                });
+                players.push({ id: i, name: `Người chơi ${i}`, balance: 1000, gender: 'male' });
             }
             renderBoard();
             updateUI();
             initBowlDrag();
-            log("Chào mừng! Hãy đặt cược rồi nhấn Xóc.");
+            initFlowers();
         }
 
-        /** --- CORE GAME LOGIC --- */
         function handleGameAction() {
             if (gameState === "IDLE") {
                 if (currentBets.length === 0) return alert("Chưa ai đặt cược cả!");
@@ -576,37 +855,26 @@
 
         function startShaking() {
             gameState = "SHAKING";
-            const btn = document.getElementById('btn-action');
-            btn.disabled = true;
-            btn.innerText = "Đang xóc...";
+            document.getElementById('btn-action').disabled = true;
+            document.getElementById('btn-action').innerText = "Đang xóc...";
 
-            // Reset vị trí bát
             const bowl = document.getElementById('the-bowl');
             bowl.classList.remove('bowl-open');
             bowl.style.transform = "translate(-50%, 0)";
             xOffset = 0; yOffset = 0;
 
-            // Xúc xắc xoay
             const dices = document.querySelectorAll('.dice');
-            dices.forEach(d => {
-                d.classList.add('shaking');
-                d.innerText = "?";
-            });
+            dices.forEach(d => { d.classList.add('shaking'); d.innerText = "?"; });
 
-            // Tính kết quả
-            diceResult = [
-                Math.floor(Math.random() * 6),
-                Math.floor(Math.random() * 6),
-                Math.floor(Math.random() * 6)
-            ];
+            diceResult = [Math.floor(Math.random() * 6), Math.floor(Math.random() * 6), Math.floor(Math.random() * 6)];
 
             setTimeout(() => {
                 dices.forEach(d => d.classList.remove('shaking'));
                 document.getElementById('d1').innerText = SYMBOLS[diceResult[0]].icon;
                 document.getElementById('d2').innerText = SYMBOLS[diceResult[1]].icon;
                 document.getElementById('d3').innerText = SYMBOLS[diceResult[2]].icon;
-
                 gameState = "WAITING_OPEN";
+                const btn = document.getElementById('btn-action');
                 btn.disabled = false;
                 btn.innerText = "MỞ BÁT (Hoặc kéo bát ra)";
                 btn.classList.add('btn-open');
@@ -615,9 +883,17 @@
 
         function openBowl() {
             if (gameState !== "WAITING_OPEN") return;
-
             const bowl = document.getElementById('the-bowl');
             bowl.classList.add('bowl-open');
+
+            // --- KÍCH HOẠT HIỆU ỨNG ---
+            // 1. Âm thanh vỗ tay
+            const sfx = document.getElementById('sfx-clap');
+            sfx.currentTime = 0;
+            sfx.play().catch(e => console.log("Lỗi SFX"));
+
+            // 2. Pháo hoa
+            startFireworks();
 
             setTimeout(() => {
                 calculateResult();
@@ -631,14 +907,12 @@
         function calculateResult() {
             let counts = [0, 0, 0, 0, 0, 0];
             diceResult.forEach(i => counts[i]++);
-
             let totalPayout = 0;
             let dealerProfit = 0;
 
             currentBets.forEach(bet => {
                 const player = players.find(p => p.id == bet.playerId);
                 const occ = counts[bet.symbolIndex];
-
                 if (occ > 0) {
                     const profit = bet.amount * occ;
                     player.balance += (bet.amount + profit);
@@ -652,103 +926,60 @@
 
             const net = dealerProfit - totalPayout;
             dealer.balance += net;
-
             log(net >= 0 ? `<b>Nhà cái lãi: ${net}$</b>` : `<b class="lose">Nhà cái lỗ: ${Math.abs(net)}$</b>`);
-
-            if (dealer.balance < 0) {
-                alert("Nhà cái vỡ nợ!"); dealer.balance = 0;
-            }
-
+            if (dealer.balance < 0) { alert("Nhà cái vỡ nợ!"); dealer.balance = 0; }
             currentBets = [];
             updateUI();
             renderBoard();
         }
 
-        /** --- BETTING LOGIC --- */
         function handlePlaceBet() {
             if (gameState !== "IDLE") return alert("Đang xóc, chờ ván sau!");
-
             const pid = document.getElementById('player-select').value;
             const symIdx = document.getElementById('selected-symbol-index').value;
             const amount = parseInt(document.getElementById('bet-amount').value);
-
             if (symIdx === "") return alert("Chưa chọn hình!");
             if (!amount || amount <= 0) return alert("Tiền không hợp lệ!");
-
             const player = players.find(p => p.id == pid);
             if (player.balance < amount) return alert("Không đủ tiền!");
-
             player.balance -= amount;
             currentBets.push({ playerId: pid, symbolIndex: parseInt(symIdx), amount: amount });
-
             updateUI();
             renderBoardBetInfo();
             log(`${player.name} cược ${amount}$ vào ${SYMBOLS[symIdx].name}`);
         }
 
-        /** --- DRAG LOGIC --- */
         function initBowlDrag() {
             const bowl = document.getElementById("the-bowl");
             const container = document.querySelector(".dealer-section");
-
             container.addEventListener("touchstart", dragStart, false);
             container.addEventListener("touchend", dragEnd, false);
             container.addEventListener("touchmove", drag, false);
-
             container.addEventListener("mousedown", dragStart, false);
             container.addEventListener("mouseup", dragEnd, false);
             container.addEventListener("mousemove", drag, false);
-
             function dragStart(e) {
                 if (gameState !== "WAITING_OPEN") return;
-
-                if (e.type === "touchstart") {
-                    initialX = e.touches[0].clientX - xOffset;
-                    initialY = e.touches[0].clientY - yOffset;
-                } else {
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
-                }
-
-                if (e.target === bowl || bowl.contains(e.target)) {
-                    active = true;
-                }
+                if (e.type === "touchstart") { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; }
+                else { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; }
+                if (e.target === bowl || bowl.contains(e.target)) { active = true; }
             }
-
             function dragEnd(e) {
-                initialX = currentX;
-                initialY = currentY;
-                active = false;
-
-                if (gameState === "WAITING_OPEN" && (Math.abs(xOffset) > 100 || Math.abs(yOffset) > 100)) {
-                    openBowl();
-                } else if (gameState === "WAITING_OPEN") {
-                    xOffset = 0; yOffset = 0;
-                    setTranslate(0, 0, bowl);
-                }
+                initialX = currentX; initialY = currentY; active = false;
+                if (gameState === "WAITING_OPEN" && (Math.abs(xOffset) > 100 || Math.abs(yOffset) > 100)) { openBowl(); }
+                else if (gameState === "WAITING_OPEN") { xOffset = 0; yOffset = 0; setTranslate(0, 0, bowl); }
             }
-
             function drag(e) {
                 if (active) {
                     e.preventDefault();
-                    if (e.type === "touchmove") {
-                        currentX = e.touches[0].clientX - initialX;
-                        currentY = e.touches[0].clientY - initialY;
-                    } else {
-                        currentX = e.clientX - initialX;
-                        currentY = e.clientY - initialY;
-                    }
-                    xOffset = currentX; yOffset = currentY;
-                    setTranslate(currentX, currentY, bowl);
+                    if (e.type === "touchmove") { currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; }
+                    else { currentX = e.clientX - initialX; currentY = e.clientY - initialY; }
+                    xOffset = currentX; yOffset = currentY; setTranslate(currentX, currentY, bowl);
                 }
             }
-
-            function setTranslate(xPos, yPos, el) {
-                el.style.transform = `translate(calc(-50% + ${xPos}px), ${yPos}px)`;
-            }
+            function setTranslate(xPos, yPos, el) { el.style.transform = `translate(calc(-50% + ${xPos}px), ${yPos}px)`; }
         }
 
-        /** --- UI HELPERS --- */
         function renderBoard() {
             const board = document.getElementById('betting-board');
             board.innerHTML = '';
@@ -761,11 +992,7 @@
                     document.querySelectorAll('.bet-option').forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                 };
-                div.innerHTML = `
-                <span class="symbol-icon">${sym.icon}</span>
-                <span class="symbol-name">${sym.name}</span>
-                <div class="current-bet-display" id="bet-display-${index}"></div>
-            `;
+                div.innerHTML = `<span class="symbol-icon">${sym.icon}</span><span class="symbol-name">${sym.name}</span><div class="current-bet-display" id="bet-display-${index}"></div>`;
                 board.appendChild(div);
             });
         }
@@ -774,89 +1001,60 @@
             for (let i = 0; i < 6; i++) document.getElementById(`bet-display-${i}`).innerText = "";
             let totals = [0, 0, 0, 0, 0, 0];
             currentBets.forEach(bet => totals[bet.symbolIndex] += bet.amount);
-            totals.forEach((t, i) => {
-                if (t > 0) document.getElementById(`bet-display-${i}`).innerText = `Tổng: ${t}$`;
-            });
+            totals.forEach((t, i) => { if (t > 0) document.getElementById(`bet-display-${i}`).innerText = `Tổng: ${t}$`; });
         }
 
         function updateUI() {
             document.getElementById('dealer-name-display').innerText = dealer.name;
             document.getElementById('dealer-balance').innerText = `Tiền: ${dealer.balance}$`;
-
             const select = document.getElementById('player-select');
             const oldVal = select.value;
             select.innerHTML = '';
             players.forEach(p => {
                 const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.text = `${AVATARS[p.gender]} ${p.name}`;
+                opt.value = p.id; opt.text = `${AVATARS[p.gender]} ${p.name}`;
                 select.appendChild(opt);
             });
             if (oldVal) select.value = oldVal;
-
             const pid = select.value || players[0].id;
             const pObj = players.find(p => p.id == pid);
             if (pObj) document.getElementById('current-player-balance').innerText = `(Dư: ${pObj.balance}$)`;
-            select.onchange = () => updateUI();
-
+            select.onchange = function () { updateUI(); };
             const list = document.getElementById('player-list');
             list.innerHTML = '';
-
-            const dDiv = document.createElement('div');
-            dDiv.className = 'player-card dealer';
-            dDiv.style.background = '#ffeaea';
+            const dDiv = document.createElement('div'); dDiv.className = 'player-card dealer'; dDiv.style.background = '#ffeaea';
             dDiv.innerHTML = `<span>🎩 ${dealer.name}</span> <span class="money-value">${dealer.balance}$</span>`;
             list.appendChild(dDiv);
-
             players.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'player-card';
-                div.innerHTML = `
-                <span><span class="player-avatar">${AVATARS[p.gender]}</span> ${p.name}</span> 
-                <span class="money-value">${p.balance}$</span>
-            `;
+                const div = document.createElement('div'); div.className = 'player-card';
+                div.innerHTML = `<span><span class="player-avatar">${AVATARS[p.gender]}</span> ${p.name}</span> <span class="money-value">${p.balance}$</span>`;
                 list.appendChild(div);
             });
-
             applyHideMoney();
-        }
-
-        function log(msg) {
-            const d = document.getElementById('game-log');
-            const e = document.createElement('div');
-            e.className = 'log-entry';
-            e.innerHTML = msg;
-            d.insertBefore(e, d.firstChild);
         }
 
         function toggleMoney() {
             showMoney = !showMoney;
             document.getElementById('money-status').innerText = showMoney ? "Hiện" : "Ẩn";
-            applyHideMoney();
+            updateUI();
         }
 
         function applyHideMoney() {
-            const elements = document.querySelectorAll('.money-value, #current-player-balance, #dealer-balance');
-            elements.forEach(el => {
-                if (!showMoney) {
-                    if (!el.getAttribute('data-origin')) el.setAttribute('data-origin', el.innerText);
-                    el.innerText = "*****";
-                } else {
-                    if (el.id === 'dealer-balance') el.innerText = `Tiền: ${dealer.balance}$`;
-                    else if (el.id === 'current-player-balance') {
-                        const pid = document.getElementById('player-select').value;
-                        const p = players.find(x => x.id == pid);
-                        if (p) el.innerText = `(Dư: ${p.balance}$)`;
-                    }
-                }
-            });
+            if (!showMoney) {
+                document.querySelectorAll('.money-value').forEach(el => { el.innerText = "*****"; });
+            }
+        }
+
+        function log(msg) {
+            const d = document.getElementById('game-log');
+            const e = document.createElement('div'); e.className = 'log-entry'; e.innerHTML = msg;
+            d.insertBefore(e, d.firstChild);
         }
 
         function toggleSidebar() {
             showSidebar = !showSidebar;
             document.getElementById('history-status').innerText = showSidebar ? "Hiện" : "Ẩn";
-            const sb = document.getElementById('sidebar');
-            const ct = document.getElementById('main-container');
+            const sb = document.getElementById('sidebar'); const ct = document.getElementById('main-container');
             if (showSidebar) { sb.classList.remove('hidden'); ct.classList.remove('hide-sidebar'); }
             else { sb.classList.add('hidden'); ct.classList.add('hide-sidebar'); }
         }
@@ -864,27 +1062,16 @@
         function openSettings() {
             document.getElementById('set-dealer-name').value = dealer.name;
             document.getElementById('set-dealer-money').value = dealer.balance;
-            const cont = document.getElementById('players-settings-container');
-            cont.innerHTML = '';
+            const cont = document.getElementById('players-settings-container'); cont.innerHTML = '';
             players.forEach((p, idx) => {
-                const div = document.createElement('div');
-                div.className = 'form-group';
-                div.innerHTML = `
-                <label>P${p.id}:</label>
-                <input type="text" id="set-name-${idx}" value="${p.name}">
-                <input type="number" id="set-money-${idx}" value="${p.balance}">
-                <div class="radio-group">
-                    <label><input type="radio" name="gender-${idx}" value="male" ${p.gender == 'male' ? 'checked' : ''}>Nam</label>
-                    <label><input type="radio" name="gender-${idx}" value="female" ${p.gender == 'female' ? 'checked' : ''}>Nữ</label>
-                </div>
-            `;
+                const div = document.createElement('div'); div.className = 'form-group';
+                div.innerHTML = `<label>P${p.id}:</label><input type="text" id="set-name-${idx}" value="${p.name}"><input type="number" id="set-money-${idx}" value="${p.balance}"><div class="radio-group"><label><input type="radio" name="gender-${idx}" value="male" ${p.gender == 'male' ? 'checked' : ''}>Nam</label><label><input type="radio" name="gender-${idx}" value="female" ${p.gender == 'female' ? 'checked' : ''}>Nữ</label></div>`;
                 cont.appendChild(div);
             });
             document.getElementById('settings-modal').style.display = 'flex';
         }
 
         function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
-
         function saveSettings() {
             dealer.name = document.getElementById('set-dealer-name').value;
             dealer.balance = parseInt(document.getElementById('set-dealer-money').value);
@@ -893,11 +1080,11 @@
                 p.balance = parseInt(document.getElementById(`set-money-${idx}`).value);
                 p.gender = document.querySelector(`input[name="gender-${idx}"]:checked`).value;
             });
-            updateUI();
-            closeSettings();
+            updateUI(); closeSettings();
         }
 
         window.onload = initGame;
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     </script>
 </body>
 
